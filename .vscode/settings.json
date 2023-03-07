@@ -1,0 +1,8 @@
+{
+  "deno.enable": true,
+  "deno.config": "./deno.json",
+  "prettier.enable": false,
+  "[typescript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  }
+}
