@@ -2,7 +2,7 @@
 
 # sol_build
 
-[![GitHub Workflow Status][gh-actions-img]][github-actions] [![Codecov][cov-badge-url]][cov-url] [![][code-quality-img]][code-quality]
+[![][code-quality-img]][code-quality]
 
 </div>
 
@@ -40,7 +40,3 @@ Compile Solidity files in a current directory and save outputs to the `artifacts
 
 [code-quality-img]: https://img.shields.io/codefactor/grade/github/deno-web3/sol_build?style=for-the-badge&color=626890&
 [code-quality]: https://www.codefactor.io/repository/github/deno-web3/sol_build
-[cov-badge-url]: https://img.shields.io/coveralls/github/deno-web3/sol_build?style=for-the-badge&color=626890&
-[cov-url]: https://coveralls.io/github/deno-web3/sol_build
-[github-actions]: https://github.com/tinyhttp/deno-web3/sol_build
-[gh-actions-img]: https://img.shields.io/github/actions/workflow/status/deno-web3/sol_build/main.yml?branch=master&style=for-the-badge&color=626890&label=&logo=github
