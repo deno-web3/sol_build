@@ -55,6 +55,7 @@ await new Command()
         bytecode: contract.evm.bytecode.object,
         abi: contract.abi,
         linkReferences: contract.evm.bytecode.linkReferences,
+        deployedLinkReferences: contract.evm.deployedBytecode.linkReferences
       })
     })
 
