@@ -7,7 +7,7 @@ Deno CLI and API to compile Solidity smart contracts.
 ### CLI
 
 ```sh
-deno install -Afq https://deno.land/x/sol_build/cli.ts
+deno install --allow-read --allow-write --allow-net -f https://deno.land/x/sol_build/cli.ts
 ```
 
 ### API
@@ -28,7 +28,6 @@ await compileToFs(solc, { optimizer: { enabled: true, runs: 200 }})
 
 Initializes a basic project with a `Hello World` contract and a compiler binary.
 
-### `compile <file.sol>`
+### `compile`
 
-Compile a Solidity file entrypoint and generate ABIs, EVM bytecode and link
-references.
+Compile Solidity files in a current directory and save outputs to the `artifacts` folder.

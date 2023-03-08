@@ -48,6 +48,6 @@ await new Command()
         e as Error,
       )
     }
-    console.log(colors.green(`Compiled ${count} Solidity files successfully`))
+    console.log(colors.green(`Compiled ${count} Solidity file${count > 1 ? 's' : ''} successfully`))
   })
   .parse(Deno.args)
