@@ -2,7 +2,7 @@
 
 # sol_build
 
-[![][code-quality-img]][code-quality]
+[![][code-quality-img]][code-quality] [![][docs-badge]][docs]
 
 </div>
 
@@ -40,3 +40,5 @@ Compile Solidity files in a current directory and save outputs to the `artifacts
 
 [code-quality-img]: https://img.shields.io/codefactor/grade/github/deno-web3/sol_build?style=for-the-badge&color=626890&
 [code-quality]: https://www.codefactor.io/repository/github/deno-web3/sol_build
+[docs-badge]: https://img.shields.io/github/v/release/deno-web3/sol_build?label=Docs&logo=deno&style=for-the-badge&color=626890
+[docs]: https://doc.deno.land/https/deno.land/x/sol_build/mod.ts
