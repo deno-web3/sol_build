@@ -3,6 +3,7 @@ export { download } from 'https://deno.land/x/solc@2.1.5/download.ts'
 export type {
   CompilationError,
   Input,
+  InputSettings,
   Output,
   Wrapper,
 } from 'https://deno.land/x/solc@2.1.5/types.ts'

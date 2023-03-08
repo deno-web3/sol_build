@@ -3,6 +3,7 @@ import {
   download,
   ensureDir,
   Input,
+  InputSettings,
   Output,
   walk,
   Wrapper,
@@ -64,7 +65,7 @@ export const initProject = async (name: string, version: string) => {
 export const compile = async (
   solc: Wrapper,
   sources: Record<string, { content: string }>,
-  settings: Input['settings'],
+  settings: InputSettings,
 ): Promise<Output> => {
   const result = JSON.parse(
     solc.compile(
@@ -86,9 +87,9 @@ export const compile = async (
   return result
 }
 
-export const saveResult = async (
+export const compileToFs = async (
   solc: Wrapper,
-  optimizer?: number | true,
+  settings: InputSettings,
 ) => {
   const files: Record<string, { content: string }> = {}
 
@@ -98,12 +99,7 @@ export const saveResult = async (
     }
   }
 
-  const result = await compile(solc, files, {
-    optimizer: {
-      enabled: !!optimizer,
-      runs: typeof optimizer === 'number' ? optimizer : undefined,
-    },
-  })
+  const result = await compile(solc, files, settings)
 
   if (result.errors) {
     throw new BuildError(result.errors[0])
@@ -132,7 +128,10 @@ export const saveResult = async (
   for (const { contracts, sourceName } of compiled) {
     await ensureDir(`artifacts/${sourceName}`)
     for (const contract of contracts) {
-      await Deno.writeTextFile(`artifacts/${sourceName}/${contract.contractName}.json`, JSON.stringify(contract, null, 2))
+      await Deno.writeTextFile(
+        `artifacts/${sourceName}/${contract.contractName}.json`,
+        JSON.stringify(contract, null, 2),
+      )
     }
   }
 

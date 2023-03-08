@@ -1,5 +1,5 @@
 import { colors, Command, createRequire, Wrapper, wrapper } from './deps.ts'
-import * as api from './api.ts'
+import * as api from './mod.ts'
 const require = createRequire(import.meta.url)
 
 await new Command()
@@ -36,7 +36,12 @@ await new Command()
     let count = 0
 
     try {
-      count = await api.saveResult(solc, optimizer)
+      count = await api.compileToFs(solc, {
+        optimizer: {
+          enabled: !!optimizer,
+          runs: typeof optimizer === 'number' ? optimizer : 200,
+        },
+      })
     } catch (e) {
       return console.error(
         colors.red(`Error: Failed to compile\n`),
