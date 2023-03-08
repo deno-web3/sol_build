@@ -5,6 +5,7 @@ import {
   ensureDir,
   Input,
   Output,
+  walk,
   Wrapper,
 } from './deps.ts'
 
@@ -46,6 +47,7 @@ function findImports(importPath: string) {
 export const initProject = async (name: string, version: string) => {
   await Deno.mkdir(name)
   Deno.chdir(name)
+  await Deno.mkdir('contracts')
   await download('.solc.js', version)
   try {
     const gitignore = await Deno.readTextFile('.gitignore')
@@ -55,23 +57,20 @@ export const initProject = async (name: string, version: string) => {
   } catch (e) {
     if (e instanceof Deno.errors.NotFound) {
       await Deno.writeTextFile('.gitignore', '.solc.js')
-    }
-    throw e
+    } else throw e
   }
-  await Deno.writeTextFile('hello.sol', HelloWorld)
+  await Deno.writeTextFile('contracts/hello.sol', HelloWorld)
 }
 
 export const compile = async (
   solc: Wrapper,
-  file: string,
+  sources: Record<string, { content: string }>,
   settings: Input['settings'],
 ): Promise<Output> => {
-  const source = await Deno.readTextFile(file)
-
   const result = JSON.parse(
     solc.compile(
       JSON.stringify({
-        sources: { [file]: { content: source } },
+        sources,
         language: 'Solidity',
         settings: {
           ...settings,
@@ -88,14 +87,19 @@ export const compile = async (
   return result
 }
 
-export const getFileNames = (output: Output) => Object.keys(output.contracts)
-
 export const saveResult = async (
   solc: Wrapper,
-  file: string,
   optimizer?: number | true,
 ) => {
-  const result = await compile(solc, file, {
+  const files: Record<string, { content: string }> = {}
+
+  for await (const entry of walk('.')) {
+    if (entry.isFile && entry.name.endsWith('.sol')) {
+      files[entry.path] = { content: await Deno.readTextFile(entry.path) }
+    }
+  }
+
+  const result = await compile(solc, files, {
     optimizer: {
       enabled: !!optimizer,
       runs: typeof optimizer === 'number' ? optimizer : undefined,
@@ -105,34 +109,33 @@ export const saveResult = async (
   if (result.errors) {
     throw new BuildError(result.errors[0])
   }
-  const filenames = getFileNames(result)
 
-  const output = Object.values(result.contracts).map((c) => {
-    const contract = Object.values(c)[0]
-    return ({
-      bytecode: `0x${contract.evm.bytecode.object}`,
-      abi: contract.abi,
-      linkReferences: contract.evm.bytecode.linkReferences,
-      deployedLinkReferences: contract.evm.deployedBytecode.linkReferences,
-    })
+  const compiled = Object.entries(result.contracts).map(([sourceName, c]) => {
+    return {
+      sourceName,
+      contracts: Object.entries(c).map(([contractName, contract]) => {
+        return ({
+          contractName,
+          sourceName,
+          bytecode: `0x${contract.evm.bytecode.object}`,
+          abi: contract.abi,
+          linkReferences: contract.evm.bytecode.linkReferences,
+          deployedLinkReferences: contract.evm.deployedBytecode.linkReferences,
+        })
+      }),
+    }
   })
 
   try {
     await Deno.remove('artifacts', { recursive: true })
   } catch {}
   await Deno.mkdir('artifacts')
+  for (const { contracts, sourceName } of compiled) {
+    await ensureDir(`artifacts/${sourceName}`)
+    for (const contract of contracts) {
+      await Deno.writeTextFile(`artifacts/${sourceName}/${contract.contractName}.json`, JSON.stringify(contract, null, 2))
+    }
+  }
 
-  filenames.map(async (file, i) => {
-    const filename = file.replace('.sol', '.json')
-    await ensureDir(`artifacts/${dirname(filename)}`)
-    await Deno.writeTextFile(
-      `artifacts/${filename}`,
-      JSON.stringify(
-        output[i],
-        null,
-        2,
-      ),
-    )
-  })
-  return filenames.length
+  return Object.keys(files).length
 }

@@ -353,9 +353,11 @@
     "https://deno.land/std@0.178.0/async/deferred.ts": "42790112f36a75a57db4a96d33974a936deb7b04d25c6084a9fa8a49f135def8",
     "https://deno.land/std@0.178.0/bytes/bytes_list.ts": "b4cbdfd2c263a13e8a904b12d082f6177ea97d9297274a4be134e989450dfa6a",
     "https://deno.land/std@0.178.0/bytes/copy.ts": "939d89e302a9761dcf1d9c937c7711174ed74c59eef40a1e4569a05c9de88219",
+    "https://deno.land/std@0.178.0/fmt/colors.ts": "938c5d44d889fb82eff6c358bea8baa7e85950a16c9f6dae3ec3a7a729164471",
     "https://deno.land/std@0.178.0/fs/_util.ts": "65381f341af1ff7f40198cee15c20f59951ac26e51ddc651c5293e24f9ce6f32",
     "https://deno.land/std@0.178.0/fs/ensure_dir.ts": "724209875497a6b4628dfb256116e5651c4f7816741368d6c44aab2531a1e603",
     "https://deno.land/std@0.178.0/fs/exists.ts": "b8c8a457b71e9d7f29b9d2f87aad8dba2739cbe637e8926d6ba6e92567875f8e",
+    "https://deno.land/std@0.178.0/fs/walk.ts": "ea95ffa6500c1eda6b365be488c056edc7c883a1db41ef46ec3bf057b1c0fe32",
     "https://deno.land/std@0.178.0/io/buffer.ts": "e2b7564f684dad625cab08f5106f33572d325705d19a36822b3272fbdfb8f726",
     "https://deno.land/std@0.178.0/path/_constants.ts": "e49961f6f4f48039c0dfed3c3f93e963ca3d92791c9d478ac5b43183413136e0",
     "https://deno.land/std@0.178.0/path/_interface.ts": "6471159dfbbc357e03882c2266d21ef9afdb1e4aa771b0545e90db58a0ba314b",
@@ -455,6 +457,12 @@
     "https://deno.land/x/solc@2.1.4/download.ts": "7c68993db2406c0d48b11dd394910253db6aa0c56e831c995dd29e5e44fc6611",
     "https://deno.land/x/solc@2.1.4/mod.ts": "0fa62a17a18fdc4c80b0a7cffba8775a7e0b91b7ac3a61d5f74de013e13a9c13",
     "https://deno.land/x/solc@2.1.4/types.ts": "a427433f319edccd988d3b0bb442b5ea681b80b5a7f2c6d7736c7963427dcb1a",
+    "https://deno.land/x/solc@2.1.5/bindings.ts": "ee8471bc983a151bbd72c9fa2b899c25281eff70abeec2d306f953c57e73e7b8",
+    "https://deno.land/x/solc@2.1.5/common.ts": "acedb455ea8f1b6608156fb3d8bad9240788b8308bcdce6667cd653fd6db77f5",
+    "https://deno.land/x/solc@2.1.5/deps.ts": "4abd3ad98419257bd43fa1fbcc244914819c6448194de8ac50f7426cc6904706",
+    "https://deno.land/x/solc@2.1.5/download.ts": "7c68993db2406c0d48b11dd394910253db6aa0c56e831c995dd29e5e44fc6611",
+    "https://deno.land/x/solc@2.1.5/mod.ts": "0fa62a17a18fdc4c80b0a7cffba8775a7e0b91b7ac3a61d5f74de013e13a9c13",
+    "https://deno.land/x/solc@2.1.5/types.ts": "a057fa0121f2efe4a0c27b11aae46ea17fb07fdba4d7c7cf01aa8b543fdb6f13",
     "https://raw.githubusercontent.com/ethereum/solc-js/540a9643cd7974e329287ebf8d4c2c70d744c11d/common/types.ts": "8ab10911ffceee409aab33f37237dcb1d3207c8ad310c291e2abcb9c7a5f4d2c"
   }
 }

@@ -13,20 +13,16 @@ await new Command()
   .arguments('<name:string>')
   .option('-v, --version <version:string>', 'Solidity compiler version')
   .action(async ({ version }, name) => {
-    try {
-      await api.initProject(name, version!)
-    } catch (e) {
-      console.error(colors.red(e))
-    }
+    console.log(colors.cyan('Initializing a new project'))
+    await api.initProject(name, version!)
   })
   .command('compile')
   .description('Compile Solidity file')
-  .arguments('<file:string>')
   .option(
     '--optimizer [runs:number]',
     'Enable optimizer (optionally with custom number of runs)',
   )
-  .action(async ({ optimizer }, file) => {
+  .action(async ({ optimizer }) => {
     let solc: Wrapper
     try {
       solc = wrapper(require('./.solc.js'))
@@ -40,7 +36,7 @@ await new Command()
     let count = 0
 
     try {
-      count = await api.saveResult(solc, file, optimizer)
+      count = await api.saveResult(solc, optimizer)
     } catch (e) {
       return console.error(
         colors.red(`Error: Failed to compile\n`),
