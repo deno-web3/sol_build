@@ -16,4 +16,4 @@ Initializes a basic project with a `Hello World` contract and a compiler binary.
 
 ### `compile <file.sol>`
 
-Compile a Solidity file entrypoint and generate ABIs.
+Compile a Solidity file entrypoint and generate ABIs, EVM bytecode and link references.
