@@ -32,14 +32,16 @@ await new Command()
         ),
       )
     }
+    let count = 0
 
     try {
-      await api.saveResult(solc, file, optimizer)
+     count = await api.saveResult(solc, file, optimizer)
     } catch (e) {
       return console.error(
         colors.red(`Error: Failed to compile\n`),
         e as Error,
       )
     }
+    console.log(colors.green(`Compiled ${count} Solidity files successfully`))
   })
   .parse(Deno.args)

@@ -101,7 +101,7 @@ export const saveResult = async (
   const output = Object.values(result.contracts).map((c) => {
     const contract = Object.values(c)[0]
     return ({
-      bytecode: contract.evm.bytecode.object,
+      bytecode: `0x${contract.evm.bytecode.object}`,
       abi: contract.abi,
       linkReferences: contract.evm.bytecode.linkReferences,
       deployedLinkReferences: contract.evm.deployedBytecode.linkReferences,
@@ -125,4 +125,5 @@ export const saveResult = async (
       ),
     )
   })
+  return filenames.length
 }
