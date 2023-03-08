@@ -10,9 +10,14 @@ await new Command()
   .description(
     'Initializes a basic project with a sample contract and a compiler binary.',
   )
+  .arguments('<name:string>')
   .option('-v, --version <version:string>', 'Solidity compiler version')
-  .action(async ({ version }) => {
-    await api.initProject(version!)
+  .action(async ({ version }, name) => {
+    try {
+      await api.initProject(name, version!)
+    } catch (e) {
+      console.error(colors.red(e))
+    }
   })
   .command('compile')
   .description('Compile Solidity file')

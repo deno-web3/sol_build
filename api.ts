@@ -43,11 +43,20 @@ function findImports(importPath: string) {
   }
 }
 
-export const initProject = async (version: string) => {
+export const initProject = async (name: string, version: string) => {
+  await Deno.mkdir(name)
+  Deno.chdir(name)
   await download('.solc.js', version)
-  const gitignore = await Deno.readTextFile('.gitignore')
-  if (!gitignore.includes('.solc.js')) {
-    await Deno.writeTextFile('.gitignore', '.solc.js\n', { append: true })
+  try {
+    const gitignore = await Deno.readTextFile('.gitignore')
+    if (!gitignore.includes('.solc.js')) {
+      await Deno.writeTextFile('.gitignore', '.solc.js\n', { append: true })
+    }
+  } catch (e) {
+    if (e instanceof Deno.errors.NotFound) {
+      await Deno.writeTextFile('.gitignore', '.solc.js')
+    }
+    throw e
   }
   await Deno.writeTextFile('hello.sol', HelloWorld)
 }
