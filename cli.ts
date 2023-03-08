@@ -35,7 +35,7 @@ await new Command()
     let count = 0
 
     try {
-     count = await api.saveResult(solc, file, optimizer)
+      count = await api.saveResult(solc, file, optimizer)
     } catch (e) {
       return console.error(
         colors.red(`Error: Failed to compile\n`),

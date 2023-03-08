@@ -68,7 +68,7 @@ export const compile = async (
           ...settings,
           outputSelection: {
             '*': {
-              '*': ['*'],
+              '*': ['evm.bytecode', 'evm.deployedBytecode', 'abi'],
             },
           },
         },
@@ -92,7 +92,7 @@ export const saveResult = async (
       runs: typeof optimizer === 'number' ? optimizer : undefined,
     },
   })
-  
+
   if (result.errors) {
     throw new BuildError(result.errors[0])
   }
