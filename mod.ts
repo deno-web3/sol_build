@@ -44,6 +44,11 @@ function findImports(importPath: string) {
   }
 }
 
+/**
+ * Initialize a new Solidity project
+ * @param name project name
+ * @param version compiler version
+ */
 export const initProject = async (name: string, version: string) => {
   await Deno.mkdir(name)
   Deno.chdir(name)
@@ -62,6 +67,12 @@ export const initProject = async (name: string, version: string) => {
   await Deno.writeTextFile('contracts/hello.sol', HelloWorld)
 }
 
+/**
+ * Compile files and return compilation result
+ * @param solc Solidity compiler API
+ * @param sources source list
+ * @param settings compiler settings
+ */
 export const compile = async (
   solc: Wrapper,
   sources: Record<string, { content: string }>,
@@ -86,7 +97,11 @@ export const compile = async (
   )
   return result
 }
-
+/**
+ * Compile contracts in a current directory and save outputs to the `artifacts` folder.
+ * @param solc Solidity compiler API
+ * @param settings Compiler settings
+ */
 export const compileToFs = async (
   solc: Wrapper,
   settings: InputSettings,
