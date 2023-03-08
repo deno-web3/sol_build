@@ -1,6 +1,5 @@
 import {
   CompilationError,
-  dirname,
   download,
   ensureDir,
   Input,
