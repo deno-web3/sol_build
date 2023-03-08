@@ -1,6 +1,13 @@
-import { colors, Command, createRequire, Wrapper, wrapper } from './deps.ts'
+import {
+  colors,
+  Command,
+  createRequire,
+  dirname,
+  ensureDir,
+  Wrapper,
+  wrapper,
+} from './deps.ts'
 import * as api from './api.ts'
-import { exists } from './utils.ts'
 const require = createRequire(import.meta.url)
 
 await new Command()
@@ -8,7 +15,9 @@ await new Command()
   .description('Deno CLI for compiling Solidity smart contracts.')
   .version('0.0.0')
   .command('init')
-  .description('Initializes a basic project with a sample contract and a compiler binary.')
+  .description(
+    'Initializes a basic project with a sample contract and a compiler binary.',
+  )
   .option('-v, --version <version:string>', 'Solidity compiler version')
   .action(async ({ version }) => {
     await api.initProject(version!)
@@ -16,14 +25,20 @@ await new Command()
   .command('compile')
   .description('Compile Solidity file')
   .arguments('<file:string>')
-  .option('--optimizer [runs:number]', 'Enable optimizer (optionally with custom number of runs)')
-  .option('--bin', 'Save contract EVM bytecode in .bin files')
-  .action(async ({ optimizer, bin }, file) => {
+  .option(
+    '--optimizer [runs:number]',
+    'Enable optimizer (optionally with custom number of runs)',
+  )
+  .action(async ({ optimizer }, file) => {
     let solc: Wrapper
     try {
       solc = wrapper(require('./.solc.js'))
     } catch {
-      return console.error(colors.red(`Error: Solidity compiler is not installed, run sol_build init first.`))
+      return console.error(
+        colors.red(
+          `Error: Solidity compiler is not installed, run sol_build init first.`,
+        ),
+      )
     }
 
     const result = await api.compile(solc, file, {
@@ -33,15 +48,32 @@ await new Command()
       },
     })
     const filenames = api.getFileNames(result)
-    const abis = api.extractAbis(result)
-    if (await exists('artifacts')) await Deno.remove('artifacts', { recursive: true })
+
+    const output = Object.values(result.contracts).map((c) => {
+      const contract = Object.values(c)[0]
+      return ({
+        bytecode: contract.evm.bytecode.object,
+        abi: contract.abi,
+        linkReferences: contract.evm.bytecode.linkReferences,
+      })
+    })
+
+    try {
+      await Deno.remove('artifacts', { recursive: true })
+    } catch {}
     await Deno.mkdir('artifacts')
-    filenames.map(async (file, i) => await Deno.writeTextFile(`artifacts/${file.replace('.sol', '.json')}`, JSON.stringify(abis[i])))
 
-    if (bin) {
-      const binaries = api.extractBins(result)
-      filenames.map(async (file, i) => await Deno.writeTextFile(`artifacts/${file.replace('.sol', '.bin')}`, binaries[i]))
-
-    }
+    filenames.map(async (file, i) => {
+      const filename = file.replace('.sol', '.json')
+      await ensureDir(`artifacts/${dirname(filename)}`)
+      await Deno.writeTextFile(
+        `artifacts/${filename}`,
+        JSON.stringify(
+          output[i],
+          null,
+          2,
+        ),
+      )
+    })
   })
   .parse(Deno.args)

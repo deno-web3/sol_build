@@ -18,11 +18,17 @@ function findImports(importPath: string) {
 export const initProject = async (version: string) => {
   await download('.solc.js', version)
   const gitignore = await Deno.readTextFile('.gitignore')
-  if (!gitignore.includes('.solc.js')) await Deno.writeTextFile('.gitignore', '.solc.js\n', { append: true })
+  if (!gitignore.includes('.solc.js')) {
+    await Deno.writeTextFile('.gitignore', '.solc.js\n', { append: true })
+  }
   await Deno.writeTextFile('hello.sol', HelloWorld)
 }
 
-export const compile = async (solc: Wrapper, file: string, settings: Input['settings']): Promise<Output> => {
+export const compile = async (
+  solc: Wrapper,
+  file: string,
+  settings: Input['settings'],
+): Promise<Output> => {
   const source = await Deno.readTextFile(file)
 
   const result = JSON.parse(
@@ -46,8 +52,3 @@ export const compile = async (solc: Wrapper, file: string, settings: Input['sett
 }
 
 export const getFileNames = (output: Output) => Object.keys(output.contracts)
-
-export const extractAbis = (output: Output) => Object.values(output.contracts).map((o) => Object.values(o)[0].abi)
-
-export const extractBins = (output: Output) =>
-  Object.values(output.contracts).map((o) => Object.values(o)[0].evm.bytecode.object)
