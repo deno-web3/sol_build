@@ -1,12 +1,4 @@
-import {
-  colors,
-  Command,
-  createRequire,
-  dirname,
-  ensureDir,
-  Wrapper,
-  wrapper,
-} from './deps.ts'
+import { colors, Command, createRequire, Wrapper, wrapper } from './deps.ts'
 import * as api from './api.ts'
 const require = createRequire(import.meta.url)
 
@@ -41,40 +33,13 @@ await new Command()
       )
     }
 
-    const result = await api.compile(solc, file, {
-      optimizer: {
-        enabled: !!optimizer,
-        runs: typeof optimizer === 'number' ? optimizer : undefined,
-      },
-    })
-    const filenames = api.getFileNames(result)
-
-    const output = Object.values(result.contracts).map((c) => {
-      const contract = Object.values(c)[0]
-      return ({
-        bytecode: contract.evm.bytecode.object,
-        abi: contract.abi,
-        linkReferences: contract.evm.bytecode.linkReferences,
-        deployedLinkReferences: contract.evm.deployedBytecode.linkReferences
-      })
-    })
-
     try {
-      await Deno.remove('artifacts', { recursive: true })
-    } catch {}
-    await Deno.mkdir('artifacts')
-
-    filenames.map(async (file, i) => {
-      const filename = file.replace('.sol', '.json')
-      await ensureDir(`artifacts/${dirname(filename)}`)
-      await Deno.writeTextFile(
-        `artifacts/${filename}`,
-        JSON.stringify(
-          output[i],
-          null,
-          2,
-        ),
+      await api.saveResult(solc, file, optimizer)
+    } catch (e) {
+      return console.error(
+        colors.red(`Error: Failed to compile\n`),
+        e as Error,
       )
-    })
+    }
   })
   .parse(Deno.args)

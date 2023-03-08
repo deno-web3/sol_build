@@ -1,6 +1,7 @@
 export { wrapper } from 'https://deno.land/x/solc@2.1.4/mod.ts'
 export { download } from 'https://deno.land/x/solc@2.1.4/download.ts'
 export type {
+  CompilationError,
   Input,
   Output,
   Wrapper,

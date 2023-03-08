@@ -1,4 +1,32 @@
-import { download, Input, Output, Wrapper } from './deps.ts'
+import {
+  CompilationError,
+  dirname,
+  download,
+  ensureDir,
+  Input,
+  Output,
+  Wrapper,
+} from './deps.ts'
+
+export class BuildError extends Error implements CompilationError {
+  formattedMessage: string
+  component: string
+  errorCode: string
+  severity: 'error' | 'warning'
+  sourceLocation: { end: number; file: string; start: number }
+  type: string
+  constructor(err: CompilationError) {
+    super(err.message)
+    this.name = 'CompilationError'
+    this.message = err.message
+    this.formattedMessage = err.formattedMessage
+    this.component = err.component
+    this.errorCode = err.errorCode
+    this.severity = err.severity
+    this.sourceLocation = err.sourceLocation
+    this.type = err.type
+  }
+}
 
 const HelloWorld = `// SPDX-License-Identifier: MIT
 pragma solidity >=0.8;
@@ -52,3 +80,49 @@ export const compile = async (
 }
 
 export const getFileNames = (output: Output) => Object.keys(output.contracts)
+
+export const saveResult = async (
+  solc: Wrapper,
+  file: string,
+  optimizer?: number | true,
+) => {
+  const result = await compile(solc, file, {
+    optimizer: {
+      enabled: !!optimizer,
+      runs: typeof optimizer === 'number' ? optimizer : undefined,
+    },
+  })
+  
+  if (result.errors) {
+    throw new BuildError(result.errors[0])
+  }
+  const filenames = getFileNames(result)
+
+  const output = Object.values(result.contracts).map((c) => {
+    const contract = Object.values(c)[0]
+    return ({
+      bytecode: contract.evm.bytecode.object,
+      abi: contract.abi,
+      linkReferences: contract.evm.bytecode.linkReferences,
+      deployedLinkReferences: contract.evm.deployedBytecode.linkReferences,
+    })
+  })
+
+  try {
+    await Deno.remove('artifacts', { recursive: true })
+  } catch {}
+  await Deno.mkdir('artifacts')
+
+  filenames.map(async (file, i) => {
+    const filename = file.replace('.sol', '.json')
+    await ensureDir(`artifacts/${dirname(filename)}`)
+    await Deno.writeTextFile(
+      `artifacts/${filename}`,
+      JSON.stringify(
+        output[i],
+        null,
+        2,
+      ),
+    )
+  })
+}
