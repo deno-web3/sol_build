@@ -1,6 +1,16 @@
-import { colors, Command, createRequire, Wrapper, wrapper } from './deps.ts'
+import { Config } from './config.ts'
+import {
+  colors,
+  Command,
+  createRequire,
+  InputSettings,
+  Wrapper,
+  wrapper,
+} from './deps.ts'
 import * as api from './mod.ts'
 const require = createRequire(import.meta.url)
+
+const cwd = Deno.cwd()
 
 await new Command()
   .name('sol_build')
@@ -22,7 +32,9 @@ await new Command()
     '--optimizer [runs:number]',
     'Enable optimizer (optionally with custom number of runs)',
   )
-  .action(async ({ optimizer }) => {
+  .option('--config, -c <file:string>', 'Config file')
+  .option('--abi', 'Generate only ABIs')
+  .action(async ({ optimizer, abi, config }) => {
     let solc: Wrapper
     try {
       solc = wrapper(require('./.solc.js'))
@@ -34,12 +46,37 @@ await new Command()
       )
     }
     let count = 0
+    let configAbi: boolean | undefined = false
+    let configModule: InputSettings = {}
+    if (config) {
+      const { abi, ...cfg }: Config = await import(
+        `${cwd}/${config}`
+      ).then((m) => m.config)
+      configAbi = abi
+      configModule = cfg
+    }
 
     try {
       count = await api.compileToFs(solc, {
+        ...configModule,
         optimizer: {
-          enabled: !!optimizer,
-          runs: typeof optimizer === 'number' ? optimizer : 200,
+          enabled: typeof optimizer === 'undefined'
+            ? configModule.optimizer?.enabled
+            : !!optimizer,
+          runs: typeof optimizer === 'undefined'
+            ? configModule.optimizer?.runs
+            : typeof optimizer === 'number'
+            ? optimizer
+            : 200,
+        },
+        outputSelection: {
+          '*': {
+            // @ts-ignore types bug
+            '*': configAbi || abi
+              ? ['abi']
+              : ['evm.bytecode', 'evm.deployedBytecode', 'abi'],
+          },
+          ...configModule.outputSelection,
         },
       })
     } catch (e) {
@@ -48,6 +85,10 @@ await new Command()
         e as Error,
       )
     }
-    console.log(colors.green(`Compiled ${count} Solidity file${count > 1 ? 's' : ''} successfully`))
+    console.log(
+      colors.green(
+        `Compiled ${count} Solidity file${count > 1 ? 's' : ''} successfully`,
+      ),
+    )
   })
   .parse(Deno.args)

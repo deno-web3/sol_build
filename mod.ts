@@ -89,6 +89,7 @@ export const compile = async (
             '*': {
               '*': ['evm.bytecode', 'evm.deployedBytecode', 'abi'],
             },
+            ...settings.outputSelection, // to be able to override outputs
           },
         },
       } as Input),
@@ -124,13 +125,17 @@ export const compileToFs = async (
     return {
       sourceName,
       contracts: Object.entries(c).map(([contractName, contract]) => {
+        const linkReferences = contract.evm?.bytecode?.linkReferences
+        const deployedLinkReferences = contract.evm?.deployedBytecode
+          ?.linkReferences
+        const bytecode = contract.evm?.bytecode?.object
         return ({
           contractName,
           sourceName,
-          bytecode: `0x${contract.evm.bytecode.object}`,
+          bytecode: bytecode ? `0x${bytecode}` : undefined,
           abi: contract.abi,
-          linkReferences: contract.evm.bytecode.linkReferences,
-          deployedLinkReferences: contract.evm.deployedBytecode.linkReferences,
+          linkReferences,
+          deployedLinkReferences,
         })
       }),
     }
