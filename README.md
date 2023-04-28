@@ -6,7 +6,7 @@
 
 </div>
 
-Deno CLI and API to compile Solidity smart contracts.
+Compile Solidity smart contracts with Deno.
 
 ## Getting Started
 
